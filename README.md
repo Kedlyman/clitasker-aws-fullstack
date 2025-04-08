@@ -23,10 +23,8 @@ It provisions and deploys:
 ├── 06-launch-ec2.sh              
 ├── 07-setup-elb.sh               
 ├── 08-create-lambda.sh           
-├── 09-cloudwatch-alarms.sh       
-├── 010-cleanup.sh                
-├── master-deploy.sh             
-├── master-cleanup.sh             
+├── 09-cloudwatch-alarms.sh                      
+├── master-deploy.sh                       
 ├── secret-manager.sh             
 ├── user-data.sh                  
 ├── app.py                        
