@@ -13,9 +13,10 @@ echo "------------------------------------------------------"
 # ─────────────────────────────────────────────
 INSTANCE_ID=$(aws ec2 describe-instances \
   --filters "Name=tag:Name,Values=aws-cli-project-ec2" \
+            "Name=instance-state-name,Values=running" \
   --query 'Reservations[0].Instances[0].InstanceId' \
   --output text \
-  --region $REGION || echo "")
+  --region $REGION 2>/dev/null || echo "")
 
 if [[ -n "$INSTANCE_ID" ]]; then
   echo "Detaching IAM instance profile from EC2..."
