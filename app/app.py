@@ -15,7 +15,7 @@ S3_BUCKET = os.environ.get("S3_BUCKET")
 
 @app.route("/")
 def home():
-    return "Hello from Flask running on EC2 behind ALB!"
+    return "Flask app is running -> Hello from Kedlyman!"
 
 @app.route("/db")
 def db_check():
@@ -34,7 +34,7 @@ def db_check():
         version = cur.fetchone()
         cur.close()
         conn.close()
-        return f"Connected to PostgreSQL DB! Version: {version[0]}"
+        return f"Connection to PostgreSQL was succesfull! Here is the version retrieved from DB: {version[0]}"
     except Exception as e:
         return f"Failed to connect to DB: {str(e)}"
 
@@ -47,8 +47,7 @@ def upload_file():
 
         if not S3_BUCKET:
             return "S3 bucket not configured."
-
-        # Optional: Validate file type & size
+            
         allowed_extensions = ('.txt', '.pdf', '.jpg', '.png')
         if not file.filename.endswith(allowed_extensions):
             return "File type not allowed."
