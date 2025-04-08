@@ -102,6 +102,9 @@ aws rds wait db-instance-deleted \
   --db-instance-identifier aws-cli-project-db \
   --region $REGION || true
 
+echo "Waiting extra 60 seconds to ensure RDS cleanup is finalized..."
+sleep 60
+
 # ─────────────────────────────────────────────
 # Step 7: Delete DB Subnet Group
 # ─────────────────────────────────────────────
@@ -137,10 +140,7 @@ aws iam remove-role-from-instance-profile \
 
 sleep 5
 
-aws iam delete-instance-profile \
-  --instance-profile-name aws-cli-project-ec2-role \
-  --region $REGION || true
-
+aws iam delete-instance-profile --instance-profile-name aws-cli-project-ec2-role --region $REGION || true
 aws iam delete-role --role-name aws-cli-project-ec2-role --region $REGION || true
 aws iam delete-role --role-name aws-cli-project-lambda-role --region $REGION || true
 
@@ -177,6 +177,8 @@ for name in aws-cli-project-EC2-SG aws-cli-project-RDS-SG aws-cli-project-ALB-SG
     --output text \
     --region $REGION || echo "")
   if [[ -n "$SG_ID" && "$SG_ID" != "None" ]]; then
+    aws ec2 revoke-security-group-egress --group-id $SG_ID --protocol all --port all --cidr 0.0.0.0/0 --region $REGION || true
+    aws ec2 revoke-security-group-ingress --group-id $SG_ID --protocol all --port all --cidr 0.0.0.0/0 --region $REGION || true
     aws ec2 delete-security-group --group-id $SG_ID --region $REGION || true
   fi
 done
@@ -193,17 +195,46 @@ VPC_ID=$(aws ec2 describe-vpcs \
 
 if [[ -n "$VPC_ID" && "$VPC_ID" != "None" ]]; then
 
-  # Delete ENIs
+  # Release Elastic IPs
+  echo "Releasing Elastic IPs..."
+  ALLOC_IDS=$(aws ec2 describe-addresses \
+    --query "Addresses[*].AllocationId" \
+    --output text \
+    --region $REGION || echo "")
+  for AID in $ALLOC_IDS; do
+    aws ec2 release-address --allocation-id $AID --region $REGION || true
+  done
+
+  # Retry ENI deletion with wait
   ENI_IDS=$(aws ec2 describe-network-interfaces \
     --filters "Name=vpc-id,Values=$VPC_ID" \
     --query "NetworkInterfaces[*].NetworkInterfaceId" \
     --output text \
     --region $REGION || echo "")
-  for ENI_ID in $ENI_IDS; do
-    aws ec2 delete-network-interface --network-interface-id $ENI_ID --region $REGION || true
-  done
 
-  # IGW
+  if [[ -n "$ENI_IDS" ]]; then
+    for ((i = 1; i <= 6; i++)); do
+      STILL_IN_USE=0
+      for ENI_ID in $ENI_IDS; do
+        STATUS=$(aws ec2 describe-network-interfaces \
+          --network-interface-ids "$ENI_ID" \
+          --query "NetworkInterfaces[0].Status" \
+          --output text \
+          --region $REGION || echo "deleted")
+        if [[ "$STATUS" == "in-use" ]]; then
+          echo "ENI $ENI_ID still in use..."
+          STILL_IN_USE=1
+        fi
+      done
+      [[ $STILL_IN_USE -eq 0 ]] && break
+      sleep 30
+    done
+
+    for ENI_ID in $ENI_IDS; do
+      aws ec2 delete-network-interface --network-interface-id $ENI_ID --region $REGION || true
+    done
+  fi
+
   IGW_ID=$(aws ec2 describe-internet-gateways \
     --filters "Name=attachment.vpc-id,Values=$VPC_ID" \
     --query "InternetGateways[0].InternetGatewayId" \
@@ -214,17 +245,15 @@ if [[ -n "$VPC_ID" && "$VPC_ID" != "None" ]]; then
     aws ec2 delete-internet-gateway --internet-gateway-id $IGW_ID --region $REGION || true
   fi
 
-  # Subnets
   SUBNET_IDS=$(aws ec2 describe-subnets \
     --filters "Name=vpc-id,Values=$VPC_ID" \
     --query "Subnets[*].SubnetId" \
     --output text \
-    --region $REGION)
+    --region $REGION || echo "")
   for SUBNET_ID in $SUBNET_IDS; do
     aws ec2 delete-subnet --subnet-id $SUBNET_ID --region $REGION || true
   done
 
-  # Route Tables
   RT_IDS=$(aws ec2 describe-route-tables \
     --filters "Name=vpc-id,Values=$VPC_ID" \
     --query "RouteTables[*].RouteTableId" \
@@ -260,7 +289,6 @@ LOG_GROUPS=$(aws logs describe-log-groups \
   --query "logGroups[?starts_with(logGroupName, '/aws/lambda/aws-cli-project-daily-summary')].logGroupName" \
   --output text \
   --region $REGION || echo "")
-
 for LOG in $LOG_GROUPS; do
   aws logs delete-log-group --log-group-name "$LOG" --region $REGION || true
 done
