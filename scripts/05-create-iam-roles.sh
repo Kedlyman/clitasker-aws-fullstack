@@ -75,9 +75,7 @@ cat > policy-document.json <<EOF
     },
     {
       "Effect": "Allow",
-      "Action": [
-        "s3:ListBuckets"
-      ],
+      "Action": "s3:ListAllMyBuckets",
       "Resource": "*"
     },
     {
