@@ -7,6 +7,7 @@ set -euo pipefail
 REGION="eu-central-1"
 ROLE_NAME="aws-cli-project-ec2-role"
 POLICY_NAME="aws-cli-project-ec2-policy"
+SECRET_NAME="aws-cli-project-db-password"
 
 # ─────────────────────────────────────────────
 # Step 1: Detect the S3 Bucket
@@ -75,9 +76,23 @@ cat > policy-document.json <<EOF
     {
       "Effect": "Allow",
       "Action": [
+        "s3:ListBuckets"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
         "logs:CreateLogGroup",
         "logs:CreateLogStream",
         "logs:PutLogEvents"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "rds:DescribeDBInstances"
       ],
       "Resource": "*"
     },
