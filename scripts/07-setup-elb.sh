@@ -113,6 +113,7 @@ echo "Registering EC2 instance with Target Group..."
 
 INSTANCE_ID=$(aws ec2 describe-instances \
   --filters "Name=tag:Name,Values=aws-cli-project-ec2" \
+            "Name=instance-state-name,Values=running" \
   --query 'Reservations[0].Instances[0].InstanceId' \
   --region $REGION \
   --output text)
