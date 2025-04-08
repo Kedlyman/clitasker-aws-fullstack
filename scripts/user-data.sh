@@ -92,7 +92,7 @@ fi
 # ─────────────────────────────────────────────
 echo "Starting Flask app..."
 
-export FLASK_APP=app.py
+export FLASK_APP=app:app
 export FLASK_RUN_PORT=80
 
 nohup /home/ubuntu/venv/bin/flask run --host=0.0.0.0 --port=$FLASK_RUN_PORT > /var/log/clitasker-flask.log 2>&1 &
