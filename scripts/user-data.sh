@@ -92,14 +92,14 @@ fi
 # ─────────────────────────────────────────────
 echo "Starting Flask app..."
 
-export FLASK_APP=app:app
-export FLASK_RUN_PORT=80
+export FLASK_APP=app.app:app 
+export FLASK_RUN_PORT=80   
 
 nohup /home/ubuntu/venv/bin/flask run --host=0.0.0.0 --port=$FLASK_RUN_PORT > /var/log/clitasker-flask.log 2>&1 &
 
 sleep 5
 
-if curl -fs http://localhost/ >/dev/null; then
+if curl -fs http://localhost:$FLASK_RUN_PORT >/dev/null; then
   echo "Flask app is running!"
 else
   echo "Flask app may not have started properly. Check the logs at /var/log/clitasker-flask.log"
