@@ -80,6 +80,13 @@ cat > policy-document.json <<EOF
         "logs:PutLogEvents"
       ],
       "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "arn:aws:secretsmanager:$REGION:*:secret:$SECRET_NAME*"
     }
   ]
 }
