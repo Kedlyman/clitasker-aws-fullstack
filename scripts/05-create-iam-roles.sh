@@ -113,21 +113,3 @@ aws iam add-role-to-instance-profile \
   --region $REGION
 
 echo "Instance profile ready and role attached."
-
-# ─────────────────────────────────────────────
-# Step 5: Attach Role to EC2 Instance
-# ─────────────────────────────────────────────
-INSTANCE_ID=$(aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=aws-cli-project-ec2" \
-  --query 'Reservations[0].Instances[0].InstanceId' \
-  --region $REGION \
-  --output text)
-
-echo "Attaching IAM instance profile to EC2..."
-aws ec2 associate-iam-instance-profile \
-  --instance-id $INSTANCE_ID \
-  --iam-instance-profile Name=$ROLE_NAME \
-  --region $REGION
-
-echo "IAM role attached to EC2."
-echo "EC2 can now access S3 bucket '$S3_BUCKET' and write to CloudWatch logs."
