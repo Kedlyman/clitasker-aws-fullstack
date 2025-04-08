@@ -128,7 +128,7 @@ aws elbv2 register-targets \
 echo ""
 echo "Checking target health status..."
 
-MAX_RETRIES=30
+MAX_RETRIES=20
 RETRY_DELAY=10
 
 for ((i=1; i<=MAX_RETRIES; i++)); do
