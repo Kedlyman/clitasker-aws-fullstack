@@ -78,6 +78,31 @@ aws iam attach-role-policy \
   --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole \
   --region $REGION || true
 
+cat > lambda-s3-policy.json <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::$S3_BUCKET/daily-summary/*"
+      ]
+    }
+  ]
+}
+EOF
+
+aws iam put-role-policy \
+  --role-name $ROLE_NAME \
+  --policy-name "${ROLE_NAME}-S3AccessPolicy" \
+  --policy-document file://lambda-s3-policy.json \
+  --region $REGION
+
+rm lambda-s3-policy.json
+
 echo "Waiting for IAM role propagation..."
 sleep 15
 
