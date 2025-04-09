@@ -34,7 +34,7 @@ echo "S3 Bucket detected: $S3_BUCKET"
 echo "Packaging Lambda function code..."
 
 if [[ ! -d "$LAMBDA_DIR" ]]; then
-  echo "❌ Lambda directory '$LAMBDA_DIR' not found. Aborting."
+  echo "Lambda directory '$LAMBDA_DIR' not found. Aborting."
   exit 1
 fi
 
@@ -142,7 +142,7 @@ aws events put-targets \
   --region $REGION || true
 
 # ─────────────────────────────────────────────
-# Step 5: Done!
+# Step 5: Done
 # ─────────────────────────────────────────────
 echo ""
 echo "Lambda function scheduled daily!"
