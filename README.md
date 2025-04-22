@@ -34,7 +34,7 @@ It provisions and deploys:
 ├── run.sh                        
 └── README.md
 
-Prerequisites
+# Prerequisites
 
 AWS CLI installed & configured (aws configure)
 
@@ -45,10 +45,9 @@ EC2, VPC, RDS, S3, IAM, Lambda, Secrets Manager, CloudWatch
 A key pair already created in AWS (name: aws-cli-project-key)
 
 
-Deployment
+# Deployment
 
 bash master-deploy.sh
-
 
 How to Access
 
