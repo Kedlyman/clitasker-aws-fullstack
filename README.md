@@ -32,3 +32,24 @@ It provisions and deploys:
 ├── handler.py                    
 ├── requirements.txt                                     
 └── README.md
+
+## How to use
+
+### Prerequisites
+
+AWS CLI configured with your credentials (command aws configure)
+Python 3.x installed
+EC2 key pair available (modify scripts accordingly)
+Proper IAM permissions to provision AWS services
+
+You can deploy everything using 'bash master-deploy.sh'
+
+### Learning goals
+
+I built this project to better understand AWS resources provisioned via CLI
+Also to learn about networking, compute, storage and IAM setup
+Pratice modular automation and bootstrapping
+Explore CloudWatch monitoring and Lambda scheduling
+Also one of the main goals was to setup a base project that i can recreate using Terraform later and also implement a CI/CD pipelines inside of it
+
+
