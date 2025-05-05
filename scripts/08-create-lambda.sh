@@ -10,7 +10,7 @@ ROLE_NAME="aws-cli-project-lambda-role"
 ZIP_FILE="lambda.zip"
 RULE_NAME="daily-task-digest-rule"
 USER=$(whoami)
-LAMBDA_DIR="/home/$USER/clitasker-aws-fullstack/lambda"
+LAMBDA_DIR="/$USER/clitasker-aws-fullstack/lambda"
 
 echo ""
 echo "Deploying Lambda function with daily trigger..."
