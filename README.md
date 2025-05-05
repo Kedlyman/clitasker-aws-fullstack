@@ -1,4 +1,4 @@
-# CLITasker: AWS CLI-Based Full Stack Deployment
+# CLITasker: AWS CLI-Based Full Stack Project
 
 CLITasker is a complete, modular infrastructure + app deployment stack using **AWS CLI** and **shell scripting**
 
