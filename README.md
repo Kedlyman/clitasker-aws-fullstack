@@ -33,32 +33,3 @@ It provisions and deploys:
 ├── requirements.txt              
 ├── run.sh                        
 └── README.md
-
-# Prerequisites
-
-AWS CLI installed & configured (aws configure)
-
-An IAM user/role with permissions to manage:
-
-EC2, VPC, RDS, S3, IAM, Lambda, Secrets Manager, CloudWatch
-
-A key pair already created in AWS (name: aws-cli-project-key)
-
-
-# Deployment
-
-bash master-deploy.sh
-
-How to Access
-
-aws elbv2 describe-load-balancers \
-  --names aws-cli-project-alb \
-  --region eu-central-1 \
-  --query 'LoadBalancers[0].DNSName' \
-  --output text
-
-Then visit:
-
-/
-/db
-/upload
