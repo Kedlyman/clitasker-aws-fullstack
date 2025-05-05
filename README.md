@@ -30,6 +30,5 @@ It provisions and deploys:
 ├── app.py                        
 ├── upload.html                   
 ├── handler.py                    
-├── requirements.txt              
-├── run.sh                        
+├── requirements.txt                                     
 └── README.md
